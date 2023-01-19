@@ -1075,6 +1075,15 @@ impl From<responses::PingResponse> for pb::PingResponse {
 }
 
 #[allow(unused_variables)]
+impl From<responses::SendcustommsgResponse> for pb::SendcustommsgResponse {
+    fn from(c: responses::SendcustommsgResponse) -> Self {
+        Self {
+            status: c.status, // Rule #2 for type string
+        }
+    }
+}
+
+#[allow(unused_variables)]
 impl From<responses::SetchannelChannels> for pb::SetchannelChannels {
     fn from(c: responses::SetchannelChannels) -> Self {
         Self {
@@ -1680,6 +1689,16 @@ impl From<pb::PingRequest> for requests::PingRequest {
             id: PublicKey::from_slice(&c.id).unwrap(), // Rule #1 for type pubkey
             len: c.len.map(|v| v as u16), // Rule #1 for type u16?
             pongbytes: c.pongbytes.map(|v| v as u16), // Rule #1 for type u16?
+        }
+    }
+}
+
+#[allow(unused_variables)]
+impl From<pb::SendcustommsgRequest> for requests::SendcustommsgRequest {
+    fn from(c: pb::SendcustommsgRequest) -> Self {
+        Self {
+            node_id: PublicKey::from_slice(&c.node_id).unwrap(), // Rule #1 for type pubkey
+            msg: hex::encode(&c.msg), // Rule #1 for type hex
         }
     }
 }

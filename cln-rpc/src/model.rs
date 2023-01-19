@@ -60,6 +60,7 @@ pub enum Request {
 	ListForwards(requests::ListforwardsRequest),
 	ListPays(requests::ListpaysRequest),
 	Ping(requests::PingRequest),
+	SendCustomMsg(requests::SendcustommsgRequest),
 	SetChannel(requests::SetchannelRequest),
 	SignInvoice(requests::SigninvoiceRequest),
 	SignMessage(requests::SignmessageRequest),
@@ -114,6 +115,7 @@ pub enum Response {
 	ListForwards(responses::ListforwardsResponse),
 	ListPays(responses::ListpaysResponse),
 	Ping(responses::PingResponse),
+	SendCustomMsg(responses::SendcustommsgResponse),
 	SetChannel(responses::SetchannelResponse),
 	SignInvoice(responses::SigninvoiceResponse),
 	SignMessage(responses::SignmessageResponse),
@@ -1276,6 +1278,24 @@ pub mod requests {
 
 	impl IntoRequest for PingRequest {
 	    type Response = super::responses::PingResponse;
+	}
+
+	#[derive(Clone, Debug, Deserialize, Serialize)]
+	pub struct SendcustommsgRequest {
+	    #[serde(alias = "node_id")]
+	    pub node_id: PublicKey,
+	    #[serde(alias = "msg")]
+	    pub msg: String,
+	}
+
+	impl From<SendcustommsgRequest> for Request {
+	    fn from(r: SendcustommsgRequest) -> Self {
+	        Request::SendCustomMsg(r)
+	    }
+	}
+
+	impl IntoRequest for SendcustommsgRequest {
+	    type Response = super::responses::SendcustommsgResponse;
 	}
 
 	#[derive(Clone, Debug, Deserialize, Serialize)]
@@ -3785,6 +3805,23 @@ pub mod responses {
 	    fn try_from(response: Response) -> Result<Self, Self::Error> {
 	        match response {
 	            Response::Ping(response) => Ok(response),
+	            _ => Err(TryFromResponseError)
+	        }
+	    }
+	}
+
+	#[derive(Clone, Debug, Deserialize, Serialize)]
+	pub struct SendcustommsgResponse {
+	    #[serde(alias = "status")]
+	    pub status: String,
+	}
+
+	impl TryFrom<Response> for SendcustommsgResponse {
+	    type Error = super::TryFromResponseError;
+
+	    fn try_from(response: Response) -> Result<Self, Self::Error> {
+	        match response {
+	            Response::SendCustomMsg(response) => Ok(response),
 	            _ => Err(TryFromResponseError)
 	        }
 	    }
